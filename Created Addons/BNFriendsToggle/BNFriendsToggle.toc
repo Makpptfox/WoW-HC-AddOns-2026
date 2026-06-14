@@ -1,0 +1,8 @@
+## Interface: 11508
+## Title: |cff00aeffBN|rFriendsToggle
+## Notes: Adds a button in your friendlist to toggle on/off |cff00aeffB|rattle|cff00aeffN|ret friends.
+## Author: Mâk
+## Version: 1.0.0
+## DefaultState:  enabled
+## SavedVariables: BNToggleSaveData
+BNFriendsToggle.lua

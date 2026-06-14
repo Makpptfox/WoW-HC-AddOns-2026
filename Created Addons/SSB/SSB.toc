@@ -1,0 +1,6 @@
+## Interface: 11508
+## Title: Soulseeker Begone
+## Notes: Drops "-Soulseeker" from the chatframe.
+## Author: Mâk
+## Version: 1.0
+SSB.lua

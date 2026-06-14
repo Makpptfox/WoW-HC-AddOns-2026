@@ -1,0 +1,7 @@
+## Interface: 11508
+## Title: DynamicTooltip
+## Notes: Anchor the tooltip to the cursor and replace it by default during combat. (Also fixes tooltip lingering when slow hovering and holding left click to move the camera)
+## Author: Mâk
+## Version: 1.0
+
+DynamicTooltip.lua

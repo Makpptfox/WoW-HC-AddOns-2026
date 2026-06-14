@@ -1,0 +1,9 @@
+## Interface: 11508
+## Title: DCAlert
+## Author: Mâk
+## Version: 2.0
+## Notes: Warning for when the client loses server connection. /dcalert for commands.
+## SavedVariables: DCAlertDB
+
+
+DCAlert.lua

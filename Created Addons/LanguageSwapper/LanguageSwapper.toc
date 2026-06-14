@@ -1,0 +1,9 @@
+## Interface: 11508
+## Title: Language Swapper
+## Notes: Bouton persistant pour changer de langue.
+## Author: Mâk
+## Version: 1.0.0
+## DefaultState:  enabled
+## SavedVariablesPerCharacter: LanguageSwapperDB
+LanguageSwapper.lua
+

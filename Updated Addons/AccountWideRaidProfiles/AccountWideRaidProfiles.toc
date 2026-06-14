@@ -1,0 +1,8 @@
+## Interface: 11508
+## Title: Account Wide Raid Profiles
+## Notes: Share Blizzard raid profile settings across characters.
+## Author: Safetyy-Illidan(US), Updated by Mâk.
+## Version: 1.3.0
+## SavedVariables: AccountWideRaidProfilesDB
+
+AccountWideRaidProfiles.lua

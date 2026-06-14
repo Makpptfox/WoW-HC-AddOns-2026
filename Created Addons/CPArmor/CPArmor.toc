@@ -1,0 +1,5 @@
+## Interface: 11508
+## Author: Mâk
+## Title: CharacterPanelArmor
+## Notes: Show your armor and its physical reduction in your character panel.
+CPArmor.lua

@@ -1,0 +1,7 @@
+## Interface: 11503
+## Note: Add Spec Tabs to the Talented Frame.
+## Dependency: Talented
+## LoadOnDemand: 1
+## DefaultState: Enabled
+
+core.lua

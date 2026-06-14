@@ -1,0 +1,8 @@
+## Interface: 11508
+## Title: RaidDispel|cff00aeffHighlight|r
+## Notes: Highlights the victim's frame with a pulse when a debuff you can dispel is applied.
+## Author: Mâk
+## Version: 1.0.0
+## DefaultState:  enabled
+
+RDH.lua
