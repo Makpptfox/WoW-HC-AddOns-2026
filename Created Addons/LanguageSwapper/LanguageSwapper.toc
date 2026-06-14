@@ -1,6 +1,6 @@
 ## Interface: 11508
 ## Title: Language Swapper
-## Notes: Bouton persistant pour changer de langue.
+## Notes: Creates a button in the character panel to smoothly swap between known languages.
 ## Author: Mâk
 ## Version: 1.0.0
 ## DefaultState:  enabled
