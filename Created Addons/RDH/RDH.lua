@@ -46,7 +46,22 @@ local function UpdateFrameAuras(frame)
 
     if #found > 0 then
         activeFrames[frame] = found
+
+        if frame.healthBar and not frameStates[frame] then
+            local r, g, b = frame.healthBar:GetStatusBarColor()
+            frameStates[frame] = { index = 1, lastSwitch = 0, origColor = { r = r, g = g, b = b } }
+        elseif frame.healthBar and frameStates[frame] and not frameStates[frame].origColor then
+            local r, g, b = frame.healthBar:GetStatusBarColor()
+            frameStates[frame].origColor = { r = r, g = g, b = b }
+        end
     else
+        if frameStates[frame] and frame.healthBar then
+            local orig = frameStates[frame].origColor
+            if orig then
+                frame.healthBar:SetStatusBarColor(orig.r, orig.g, orig.b)
+            end
+        end
+
         activeFrames[frame] = nil
         frameStates[frame] = nil
     end
