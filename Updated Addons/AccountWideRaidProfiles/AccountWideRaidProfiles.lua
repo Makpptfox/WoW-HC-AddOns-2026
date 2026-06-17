@@ -191,22 +191,34 @@ local function SetupHooks()
     end
 end
 
+local isInitialized = false
+
 local function OnEvent(self, event, arg1)
     if event == "ADDON_LOADED" and arg1 == addonName then
         EnsureDB()
-    elseif event == "PLAYER_LOGIN" then
+    elseif event == "PLAYER_ENTERING_WORLD" then
+        if isInitialized then return end
+        isInitialized = true
+
         if not CanUseRaidProfiles() then
             Print("Raid profile APIs are unavailable on this client. The addon cannot synchronize raid profiles.")
             return
         end
-        if DB.profiles and #DB.profiles > 0 then
-            LoadAll()
-            Print("Loaded account-wide raid profile settings.")
-        else
-            StoreAll()
-            Print("Stored current raid profile settings for account-wide use.")
-        end
-        SetupHooks()
+        
+        C_Timer.After(0.5, function()
+            if DB.profiles and #DB.profiles > 0 then
+                LoadAll()
+                Print("Loaded account-wide raid profile settings.")
+            else
+                StoreAll()
+                Print("Stored current raid profile settings for account-wide use.")
+            end
+            SetupHooks()
+
+            if type(CompactUnitFrameProfiles_ApplyAutoSelectProfiles) == "function" then
+                CompactUnitFrameProfiles_ApplyAutoSelectProfiles()
+            end
+        end)
     elseif event == "PLAYER_LOGOUT" then
         if CanUseRaidProfiles() then
             StoreAll()
@@ -216,7 +228,7 @@ end
 
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")
-eventFrame:RegisterEvent("PLAYER_LOGIN")
+eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("PLAYER_LOGOUT")
 eventFrame:SetScript("OnEvent", OnEvent)
 
