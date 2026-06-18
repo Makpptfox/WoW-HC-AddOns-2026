@@ -44,7 +44,7 @@ local function rebuildTooltip()
         -- Action bars, buffs, etc.
         local focus
         if GetMouseFoci then
-            focus = select(1, GetMouseFoci())
+            focus = GetMouseFoci()[1]
         elseif GetMouseFocus then
             focus = GetMouseFocus()
         end
@@ -102,7 +102,7 @@ frame:SetScript("OnUpdate", function(self, elapsed)
             local tooltipUnit = GameTooltip:GetUnit()
             local hoverFrame
             if GetMouseFoci then
-                hoverFrame = select(1, GetMouseFoci())
+                hoverFrame = GetMouseFoci()[1]
             elseif GetMouseFocus then
                 hoverFrame = GetMouseFocus()
             end
