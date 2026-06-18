@@ -22,6 +22,8 @@ All addons are provided "as is", without warranty of any kind. I do not claim ow
     Highlights the victim's raid frame with a pulse when a dispelable debuff is applied.
 * **SSB (SoulSeeker Begone)**
     Removes the occasional "-Soulseeker" suffix from player nicknames in the chat, reducing visual clutter specific to the HC environment.
+* **CategoryChecker**
+    Checks if an item has a category cooldown (i.e. potions) and if so shows it in the tooltip.
 
 ---
 
