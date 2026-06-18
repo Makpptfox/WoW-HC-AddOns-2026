@@ -154,7 +154,7 @@ local function Tabs_Update(self)
 	else
 		self.spec2:Hide()
 	end
-	local _, pet = HasPetUI()
+	--[[local _, pet = HasPetUI()
 	if pet then
 		local petspec1 = self.petspec1
 		petspec1:Show()
@@ -162,7 +162,8 @@ local function Tabs_Update(self)
 		petspec1:SetPoint("TOP", anchor, "BOTTOM", 0, -20)
 	else
 		self.petspec1:Hide()
-	end
+	end]]
+	self.petspec1:Hide()
 end
 
 local function MakeTabs(parent)
@@ -180,7 +181,7 @@ local function MakeTabs(parent)
 	f:RegisterEvent("UNIT_PET")
 	f:RegisterEvent("PLAYER_LEVEL_UP")
 	f:RegisterEvent("PLAYER_TALENT_UPDATE")
-	f:RegisterEvent("PET_TALENT_UPDATE")
+	--f:RegisterEvent("PET_TALENT_UPDATE")
 
 	f.Update = Tabs_Update
 	f.UpdateCheck = Tabs_UpdateCheck

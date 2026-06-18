@@ -41,7 +41,14 @@ local function gettipline(tip, tipValues, rank)
 		tipRank = tipValues[rank]
 	end
 
-	return string.format(tip, unpack(tipRank))
+	-- Fix to avoid lua error caused by '%'
+	local success, result = pcall(string.format, tip, unpack(tipRank))
+	
+	if success then
+		return result
+	else
+		return string.gsub(tip, "%%%%", "%%")
+	end
 end
 
 local function addtipline(tip)
