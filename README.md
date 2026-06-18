@@ -46,6 +46,8 @@ All addons are provided "as is", without warranty of any kind. I do not claim ow
 
 **Implemented Fixes:**
 * Fixed the inability to swap talents when dual spec is usable.
+* Fixed some talents not being selectable or having no tooltip.
+* Removed the pet talents tab as there is no pet talents in Classic HC.
 
 ### [Account Wide Raid Profiles](https://www.curseforge.com/wow/addons/account-wide-raid-profiles)
 > *"Make blizzard raid profile settings account-wide."*
