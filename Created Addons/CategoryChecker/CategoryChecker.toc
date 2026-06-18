@@ -1,0 +1,6 @@
+## Interface: 11508
+## Title: |cffcc6600C|rategory|cffcc6600C|rhecker
+## Notes: Checks if an item has a category cooldown (i.e. potions) and if so shows it in the tooltip.
+## Author: Mâk
+## Version: 1.0.0
+CategoryChecker.lua
