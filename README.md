@@ -60,7 +60,9 @@ All addons are provided "as is", without warranty of any kind. I do not claim ow
 
 ---
 
-## 📄 License
+## 📄 License & Distribution Policy
 
-* The original addons located in the `Created Addons/` folder are released under the **MIT License**.
-* The modified addons located in the `Updated Addons/` folder remain under the respective original licenses of their authors (e.g., zlib/libpng). Please refer to the source files and the original project pages for more details.
+* **Usage Permitted:** You are granted a free, non-exclusive license to download, install, and use the addons contained in this repository for any gameplay purposes, including monetized live streaming and video creation (Twitch, YouTube, etc.).
+* **Strict No Redistribution:** Reposting, redistributing, packaging, or uploading any of the originally created addons or the specific updated forks provided in this repository to platforms like CurseForge, WoWInterface, WowUp, or any other third-party site is strictly prohibited without explicit, prior written authorization.
+* **No Commercial Distribution:** You may not monetize the addon files themselves. Selling the addons, gating them behind paywalls (e.g., Patreon), or including them in any paid compilations or premium client packages is strictly forbidden.
+* **Updated Addons (Forks):** The original underlying code of the addons in the `Updated Addons/` folder remains under their original zlib license. However, the specific modifications, fixes, and distributions provided in this repository are governed by the strict non-redistribution and non-commercial distribution policies outlined above.
