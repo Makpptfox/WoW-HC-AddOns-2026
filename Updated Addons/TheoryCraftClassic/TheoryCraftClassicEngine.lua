@@ -782,7 +782,7 @@ local function GenerateTooltip(frame, returndata, spelldata, spellrank)
 		end
 		local i = 1
 		-- Crit chance is your sum-total of melee_crit + spell_specific_crit [+ spell_group_crit, ]
-		returndata["critchance"] = TheoryCraft_Data.Stats["meleecritchance"] + TheoryCraft_GetStat(spelldata.id.."critchance")
+		returndata["critchance"] = (TheoryCraft_Data.Stats["meleecritchance"] or 0) + TheoryCraft_GetStat(spelldata.id.."critchance")
 		while spelldata.Schools[i] do
 			returndata["critchance"] = returndata["critchance"] + TheoryCraft_GetStat(spelldata.Schools[i].."critchance")
 			i = i + 1
@@ -986,29 +986,29 @@ local function GenerateTooltip(frame, returndata, spelldata, spellrank)
 			returndata["nextagidam"] = 10*TheoryCraft_Data.Talents["agimultiplier"]
 			if spelldata.ismelee then
 				if spelldata.nextattack then
-					local attackpower = 10*TheoryCraft_Data.Talents["agimultiplier"] * TheoryCraft_Data.Stats["agilityapmelee"]
+					local attackpower = 10*(TheoryCraft_Data.Talents["agimultiplier"] or 1) * (TheoryCraft_Data.Stats["agilityapmelee"] or 0)
 					local addeddamage = attackpower * (TheoryCraft_Data.EquipEffects["MainSpeed"]) * returndata["backstabmult"] * returndata["baseincrease"] * TheoryCraft_GetStat("Meleemodifier")/14
-					local addedcritpercent = 10*TheoryCraft_Data.Talents["agimultiplier"] / TheoryCraft_Data.Stats["agipercrit"]/100
+					local addedcritpercent = 10*(TheoryCraft_Data.Talents["agimultiplier"] or 1) / (TheoryCraft_Data.Stats["agipercrit"] or 1) / 100
 					returndata["nextagidam"] = addedcritpercent * returndata["averagecritdam"] + addeddamage * (addedcritpercent + returndata["critdmgchance"]/100) * returndata["critbonus"] + addeddamage
 					returndata["damworth"] = (1+(returndata["critchance"]/100) * returndata["critbonus"]) * (TheoryCraft_Data.EquipEffects["MainSpeed"])/14 * returndata["backstabmult"] * returndata["baseincrease"] * TheoryCraft_GetStat("Meleemodifier")
 				elseif returndata["bloodthirstmult"] then
-					local attackpower = 10*TheoryCraft_Data.Talents["agimultiplier"] * TheoryCraft_Data.Stats["agilityapmelee"]
+					local attackpower = 10*(TheoryCraft_Data.Talents["agimultiplier"] or 1) * (TheoryCraft_Data.Stats["agilityapmelee"] or 0)
 					local addeddamage = attackpower * returndata["bloodthirstmult"] * returndata["backstabmult"] * returndata["baseincrease"] * TheoryCraft_GetStat("Meleemodifier")/14
-					local addedcritpercent = 10*TheoryCraft_Data.Talents["agimultiplier"]/TheoryCraft_Data.Stats["agipercrit"]/100
+					local addedcritpercent = 10*(TheoryCraft_Data.Talents["agimultiplier"] or 1) / (TheoryCraft_Data.Stats["agipercrit"] or 1) / 100
 					returndata["nextagidam"] = addedcritpercent * returndata["averagecritdam"] + addeddamage * (addedcritpercent + returndata["critdmgchance"]/100) * returndata["critbonus"] + addeddamage
 					returndata["damworth"] = (1+(returndata["critchance"]/100) * returndata["critbonus"]) * returndata["bloodthirstmult"] * returndata["backstabmult"] * returndata["baseincrease"] * TheoryCraft_GetStat("Meleemodifier")
 				else
-					local attackpower = 10*TheoryCraft_Data.Talents["agimultiplier"] * TheoryCraft_Data.Stats["agilityapmelee"]
+					local attackpower = 10*(TheoryCraft_Data.Talents["agimultiplier"] or 1) * (TheoryCraft_Data.Stats["agilityapmelee"] or 0)
 					local addeddamage = attackpower * TheoryCraft_Data.EquipEffects["MeleeAPMult"] * returndata["backstabmult"] * returndata["baseincrease"] * TheoryCraft_GetStat("Meleemodifier")/14
-					local addedcritpercent = 10*TheoryCraft_Data.Talents["agimultiplier"] / TheoryCraft_Data.Stats["agipercrit"]/100
+					local addedcritpercent = 10*(TheoryCraft_Data.Talents["agimultiplier"] or 1) / (TheoryCraft_Data.Stats["agipercrit"] or 1) / 100
 					returndata["nextagidam"] = addedcritpercent * returndata["averagecritdam"] + addeddamage * (addedcritpercent + returndata["critdmgchance"]/100) * returndata["critbonus"] + addeddamage
 					returndata["damworth"] = (1+(returndata["critchance"]/100) * returndata["critbonus"]) * TheoryCraft_Data.EquipEffects["MeleeAPMult"]/14 * returndata["backstabmult"] * returndata["baseincrease"] * TheoryCraft_GetStat("Meleemodifier")
 				end
-				returndata["nextstrdam"] = 10*TheoryCraft_Data.Talents["strmultiplier"] * TheoryCraft_Data.Stats["strengthapmelee"] * returndata["damworth"]
+				returndata["nextstrdam"] = 10*(TheoryCraft_Data.Talents["strmultiplier"] or 1) * (TheoryCraft_Data.Stats["strengthapmelee"] or 0) * (returndata["damworth"] or 0)
 			else
-				local attackpower = 10*TheoryCraft_Data.Talents["agimultiplier"] * TheoryCraft_Data.Stats["agilityapranged"]
-				local addeddamage = attackpower * returndata["RangedAPMult"] * returndata["backstabmult"] * returndata["baseincrease"] * TheoryCraft_GetStat("Rangedmodifier")/14
-				local addedcritpercent = 10*TheoryCraft_Data.Talents["agimultiplier"] / TheoryCraft_Data.Stats["agipercrit"]/100
+				local attackpower = 10*(TheoryCraft_Data.Talents["agimultiplier"] or 1) * (TheoryCraft_Data.Stats["agilityapranged"] or 0)
+				local addeddamage = attackpower * (returndata["RangedAPMult"] or 1) * (returndata["backstabmult"] or 1) * (returndata["baseincrease"] or 1) * TheoryCraft_GetStat("Rangedmodifier")/14
+				local addedcritpercent = 10*(TheoryCraft_Data.Talents["agimultiplier"] or 1) / (TheoryCraft_Data.Stats["agipercrit"] or 1) / 100
 				returndata["nextagidam"] = addedcritpercent * returndata["averagecritdam"] + addeddamage * (addedcritpercent + returndata["critdmgchance"]/100) * returndata["critbonus"] + addeddamage
 				returndata["damworth"] = (1+(returndata["critchance"]/100) * returndata["critbonus"]) * returndata["RangedAPMult"]/14 * returndata["backstabmult"] * returndata["baseincrease"] * TheoryCraft_GetStat("Rangedmodifier")
 			end
