@@ -1,12 +1,19 @@
 -- BNFriendsToggle --
 
 local _, BNGNF = pcall(function() return _G.BNGetNumFriends end)
-local db 
+local db
+local isSorting = false
 
 local function UpdateButtonStatus(btn)
     if not btn then return end
     local color = db.hidden and "|cfffff2ccHidden|r" or "|cff00aeffShown|r"
     btn:SetText("BNet Friends: " .. color)
+end
+
+local function ClearStaleFriendTooltip()
+    if _G.GameTooltip and _G.GameTooltip:IsShown() then
+        _G.GameTooltip:Hide()
+    end
 end
 
 _G.BNGetNumFriends = function(...)
@@ -16,18 +23,16 @@ _G.BNGetNumFriends = function(...)
     return BNGNF(...)
 end
 
-local function ToggleBNFriends()
-    db.hidden = not db.hidden
-
-    local btn = _G["ToggleBNFriendsButton"]
-    UpdateButtonStatus(btn)
-
-    -- Force client-side sort to fix index going crazy
+-- resort and redraw together to keep text and id in sync
+local function RefreshFriendsList()
     if _G.C_FriendList and _G.C_FriendList.SortFriends then
+        isSorting = true
         _G.C_FriendList.SortFriends()
+        isSorting = false
     end
 
-    -- Reset scroll bar position if it appeared after a on/off
+    ClearStaleFriendTooltip()
+
     local scroll = _G.FriendsFrameFriendsScrollFrame
     if scroll then
         if _G.HybridScrollFrame_SetOffset then
@@ -38,21 +43,50 @@ local function ToggleBNFriends()
         end
     end
 
-    if _G.FriendsFrame and _G.FriendsFrame:IsVisible() then
-        _G.FriendsFrame:Hide()
-        _G.FriendsFrame:Show()
+    -- force redraw
+    if _G.FriendsFrame and _G.FriendsFrame:IsVisible() and _G.FriendsFrame_Update then
+        _G.FriendsFrame_Update()
     end
-    
-    -- Delayed update to catches the sort result
+
+    -- catch async sort result
     _G.C_Timer.After(0.2, function()
         if _G.FriendsFrame and _G.FriendsFrame:IsVisible() then
             if _G.FriendsFrame_Update then _G.FriendsFrame_Update() end
+            ClearStaleFriendTooltip()
+        end
+    end)
+end
+
+local function ToggleBNFriends()
+    _G.PlaySound(856)
+
+    db.hidden = not db.hidden
+
+    local btn = _G["ToggleBNFriendsButton"]
+    UpdateButtonStatus(btn)
+
+    RefreshFriendsList()
+end
+
+-- debounce updates events (login/logoff/remove/add)
+local refreshGeneration = 0
+local function ScheduleNetworkRefresh()
+    refreshGeneration = refreshGeneration + 1
+    local myGeneration = refreshGeneration
+    _G.C_Timer.After(0.3, function()
+        -- verify latest call
+        if myGeneration == refreshGeneration then
+            RefreshFriendsList()
         end
     end)
 end
 
 local f = _G.CreateFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
+f:RegisterEvent("FRIENDLIST_UPDATE")
+f:RegisterEvent("BN_FRIEND_INFO_CHANGED")
+f:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED")
+
 f:SetScript("OnEvent", function(self, event)
     if event == "PLAYER_LOGIN" then
         _G.BNToggleSaveData = _G.BNToggleSaveData or {}
@@ -63,12 +97,11 @@ f:SetScript("OnEvent", function(self, event)
             local btn = _G.CreateFrame("Button", "ToggleBNFriendsButton", _G.FriendsFrame, "UIPanelButtonTemplate")
             btn:SetSize(140, 25)
             btn:SetPoint("TOPLEFT", _G.FriendsFrame, "TOPLEFT", 190, -56)
-            
+
             btn:SetScript("OnClick", ToggleBNFriends)
 
             UpdateButtonStatus(btn)
 
-            -- Check so the button only spawns on the friends tab
             _G.hooksecurefunc("FriendsFrame_Update", function()
                 if _G.FriendsFrame.selectedTab == 1 then
                     btn:Show()
@@ -77,6 +110,31 @@ f:SetScript("OnEvent", function(self, event)
                 end
             end)
         end
-        self:UnregisterEvent("PLAYER_LOGIN")
+
+    -- realign indices on network events
+    elseif db and db.hidden and not isSorting then
+        if event == "FRIENDLIST_UPDATE" or event == "BN_FRIEND_INFO_CHANGED" or event == "BN_FRIEND_LIST_SIZE_CHANGED" then
+            ScheduleNetworkRefresh()
+        end
     end
 end)
+
+_G.SLASH_BNFTDEBUG1 = "/bnftdebug"
+_G.SlashCmdList = _G.SlashCmdList or {}
+_G.SlashCmdList["BNFTDEBUG"] = function()
+    local scroll = _G.FriendsFrameFriendsScrollFrame
+    if not (scroll and scroll.buttons) then
+        print("BNFriendsToggle: no FriendsFrameFriendsScrollFrame.buttons found.")
+        return
+    end
+    print("BNFriendsToggle: hidden=" .. tostring(db and db.hidden))
+    for i, button in ipairs(scroll.buttons) do
+        if button:IsShown() then
+            local nameText = button.name and button.name:GetText() or "?"
+            print(string.format(
+                "  row %d: text=%s  buttonType=%s  id=%s",
+                i, tostring(nameText), tostring(button.buttonType), tostring(button.id)
+            ))
+        end
+    end
+end

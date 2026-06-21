@@ -1,0 +1,7 @@
+## Interface: 11508
+## Title: VanillaDruidManaBar
+## Notes: Adds a mana bar while in cat or bear form while keeping the vanilla visual design.
+## Author: Mâk
+## Version: 1.0.0
+## SavedVariables: VDManaBar
+VanillaDruidManaBar.lua

@@ -24,6 +24,8 @@ All addons are provided "as is", without warranty of any kind. I do not claim ow
     Removes the occasional "-Soulseeker" suffix from player nicknames in the chat, reducing visual clutter specific to the HC environment.
 * **CategoryChecker**
     Checks if an item has a category cooldown (i.e. potions) and if so shows it in the tooltip.
+* **VanillaDruidManaBar**
+    Adds a fully configurable mana bar while in cat or bear form while staying true to the vanilla visual design.
 
 ---
 
