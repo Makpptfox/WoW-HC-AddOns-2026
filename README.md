@@ -8,7 +8,7 @@ All addons are provided "as is", without warranty of any kind. I do not claim ow
 
 * **You can receive the updates automatically from my github if you uses the WowUp application**
 	
-	Launch the WowUp application, on the left side, navigate to "Get Addons", top right "Install from URL", paste `https://github.com/Makpptfox/WoW-HC-AddOns-2026` in the "Addon URL" field, and press "Import". 
+	Launch the WowUp application, on the left side, navigate to "Get Addons", top right "Install from URL", paste `https://github.com/Makpptfox/WoW-HC-AddOns-2026` in the "Addon URL" field, press "Import" then press "Install". 
 	Once completed, my GitHub avatar will appear, and WowUp will automatically fetch all addons every time a new release is pushed to this repository.
 	
 * **You can safely disable any specific addon you do not wish to use directly from the in-game addon menu without impacting the functionality of the rest of the pack.**
