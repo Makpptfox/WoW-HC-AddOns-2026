@@ -1,0 +1,28 @@
+name: Package Addon for WowUp
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create Zip Archive
+        run: |
+          mkdir staging_dir
+          
+          cp -r "Created Addons"/* staging_dir/
+          cp -r "Updated Addons"/* staging_dir/
+          
+          cd staging_dir
+          zip -r "../M'sAP-${{ github.event.release.tag_name }}-classic.zip" .
+          
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: "M'sAP-${{ github.event.release.tag_name }}-classic.zip"

@@ -4,27 +4,36 @@ Collection of addons created and updated by and for myself, compatible with Clas
 
 All addons are provided "as is", without warranty of any kind. I do not claim ownership of the original code for the addons located in the `Updated Addons` folder. Original authors are credited via links to their respective project pages, and all modifications are strictly documented below.
 
+# Auto-Update (Require [WowUp application](https://wowup.io))
+
+* **You can receive the updates automatically from my github if you uses the WowUp application**
+	
+	Launch the WowUp application, on the left side, navigate to "Get Addons", top right "Install from URL", paste `https://github.com/Makpptfox/WoW-HC-AddOns-2026` in the "Addon URL" field, and press "Import". 
+	Once completed, my GitHub avatar will appear, and WowUp will automatically fetch all addons every time a new release is pushed to this repository.
+	
+* **You can safely disable any specific addon you do not wish to use directly from the in-game addon menu without impacting the functionality of the rest of the pack.**
+	
 ---
 
 ## 🛠️ Created Addons
 
-* **BNFriendsToggle**
+* **BNFriendsToggle:**
     Adds a button in the friend list to toggle the display of Battle.net friends on or off.
-* **CPArmor**
+* **CPArmor:**
     Adds a small text indicator on the top left of the character panel to show armor and % physical damage reduction. Eliminates the need to open the defense tab for this specific metric.
-* **DCAlert**
+* **DCAlert:**
     Provides a warning when the client loses server connection.
-* **DynamicTooltip**
+* **DynamicTooltip:**
     Anchors the tooltip to the cursor and replaces it by default during combat. Fixes tooltip lingering when slowly hovering and holding left-click to move the camera.
-* **LanguageSwapper**
+* **LanguageSwapper:**
     Creates a button in the character panel to smoothly swap between known languages.
-* **RDH (RaidDispelHighlight)**
+* **RDH (RaidDispelHighlight):**
     Highlights the victim's raid frame with a pulse when a dispelable debuff is applied.
-* **SSB (SoulSeeker Begone)**
+* **SSB (SoulSeeker Begone):**
     Removes the occasional "-Soulseeker" suffix from player nicknames in the chat, reducing visual clutter specific to the HC environment.
-* **CategoryChecker**
+* **CategoryChecker:**
     Checks if an item has a category cooldown (i.e. potions) and if so shows it in the tooltip.
-* **VanillaDruidManaBar**
+* **VanillaDruidManaBar:**
     Adds a fully configurable mana bar while in cat or bear form while staying true to the vanilla visual design.
 
 ---
