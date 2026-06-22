@@ -19,10 +19,10 @@ jobs:
           cp -r "Updated Addons"/* staging_dir/
           
           cd staging_dir
-          zip -r "../M'sAP-${{ github.event.release.tag_name }}-classic.zip" .
+          zip -r "../MsAP-${{ github.event.release.tag_name }}-classic.zip" .
           
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.release.tag_name }}
-          files: "M'sAP-${{ github.event.release.tag_name }}-classic.zip"
+          files: "MsAP-${{ github.event.release.tag_name }}-classic.zip"
