@@ -10,7 +10,9 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      
+        with:
+          ref: ${{ github.event.release.target_commitish }}
+          
       - name: Create Zip Archive
         run: |
           mkdir staging_dir
@@ -26,3 +28,25 @@ jobs:
         with:
           tag_name: ${{ github.event.release.tag_name }}
           files: "MsAP-${{ github.event.release.tag_name }}-classic.zip"
+
+      - name: Update CHANGELOG.md
+        env:
+          RELEASE_BODY: ${{ github.event.release.body }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          echo "$RELEASE_BODY" > new_entry.md
+          echo "" >> new_entry.md
+          
+          if [ -f CHANGELOG.md ]; then
+            echo "---------" >> new_entry.md
+            echo "" >> new_entry.md
+            cat CHANGELOG.md >> new_entry.md
+          fi
+          
+          mv new_entry.md CHANGELOG.md
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add CHANGELOG.md
+          git diff --quiet && git diff --staged --quiet || (git commit -m "docs: update CHANGELOG.md for $RELEASE_TAG [skip ci]" && git push)
