@@ -1,3 +1,9 @@
+## 🔄 Update V2
+
+** Fixed major issue in the categoryID check.
+
+---------
+
 ## 🔄 Update 1.1
 
 ** Fixing .toc interface versions.
