@@ -1,5 +1,11 @@
 local addonName, addon = ...
 
+local _, class = UnitClass("player")
+
+if class ~= "DRUID" then
+    return
+end
+
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
 f:RegisterEvent("UNIT_DISPLAYPOWER")
