@@ -1,3 +1,9 @@
+## 🔄 Update V3
+
+** Fixed VanillaDruidManaBar to init only if you're a druid.
+
+---------
+
 ## 🔄 Update V2
 
 ** Fixed major issue in the categoryID check.
