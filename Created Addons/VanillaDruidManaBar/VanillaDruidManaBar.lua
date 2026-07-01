@@ -1,16 +1,27 @@
+-- VanillaDruidManaBar --
+
 local addonName, addon = ...
 
 local _, class = UnitClass("player")
-
 if class ~= "DRUID" then
     return
 end
+
+local previousMana = UnitPower("player", 0)
+local nextTickTime = 0
+local fsrEndTime = 0
+local waitingForFirstTick = false
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
 f:RegisterEvent("UNIT_DISPLAYPOWER")
 f:RegisterEvent("UNIT_POWER_UPDATE")
 f:RegisterEvent("UNIT_MAXPOWER")
+f:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+
+f:SetScript("OnUpdate", function()
+    previousMana = UnitPower("player", 0)
+end)
 
 local bar = CreateFrame("StatusBar", "VanillaDruidManaBar", PlayerFrame)
 bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
@@ -21,18 +32,37 @@ bar:RegisterForDrag("LeftButton")
 bar:SetClampedToScreen(true)
 bar:Hide()
 
-bar:SetFrameStrata("BACKGROUND")
-bar:SetFrameLevel(math.max(1, PlayerFrame:GetFrameLevel() - 1))
+-- text overlay sublevel 1
+local textLeft = bar:CreateFontString(nil, "ARTWORK", "TextStatusBarText")
+textLeft:SetDrawLayer("ARTWORK", 7) -- force override template layer
+textLeft:SetPoint("LEFT", bar, "LEFT", 5, 0)
 
-local border = bar:CreateTexture(nil, "OVERLAY")
+local textRight = bar:CreateFontString(nil, "ARTWORK", "TextStatusBarText")
+textRight:SetDrawLayer("ARTWORK", 7)
+textRight:SetPoint("RIGHT", bar, "RIGHT", -4, 0)
+
+-- spark overlay sublevel 2
+local spark = bar:CreateTexture(nil, "OVERLAY", nil, 1)
+spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+spark:SetBlendMode("ADD")
+spark:SetWidth(18)
+spark:Hide()
+
+-- border overlay sublevel 3
+local border = bar:CreateTexture(nil, "OVERLAY", nil, 2)
 border:SetPoint("CENTER", bar, "CENTER", 0, -2)
 border:SetTexture("Interface\\AddOns\\VanillaDruidManaBar\\VanillaDruidManaBar.png")
 
-local textLeft = bar:CreateFontString(nil, "OVERLAY", "TextStatusBarText")
-textLeft:SetPoint("LEFT", bar, "LEFT", 4, 0)
-
-local textRight = bar:CreateFontString(nil, "OVERLAY", "TextStatusBarText")
-textRight:SetPoint("RIGHT", bar, "RIGHT", -4, 0)
+local function UpdateDepth()
+    if VDManaBar and not VDManaBar.locked then
+        -- float above ui for easier dragging
+        bar:SetFrameStrata("HIGH")
+        bar:SetFrameLevel(PlayerFrame:GetFrameLevel() + 10)
+    else
+        bar:SetFrameStrata("BACKGROUND")
+        bar:SetFrameLevel(math.max(1, PlayerFrame:GetFrameLevel() - 1))
+    end
+end
 
 bar:SetScript("OnEnter", function(self)
     if VDManaBar and not VDManaBar.locked then
@@ -44,6 +74,43 @@ end)
 
 bar:SetScript("OnLeave", function()
     GameTooltip:Hide()
+end)
+
+bar:SetScript("OnUpdate", function(self)
+    local currMana = UnitPower("player", 0)
+    local maxMana = UnitPowerMax("player", 0)
+    local now = GetTime()
+    
+    if VDManaBar and VDManaBar.trackTicks and currMana < maxMana then
+        local w = self:GetWidth()
+        local offset = 2
+        local travelWidth = w - (offset * 2)
+        
+        if now < fsrEndTime then
+            spark:Show()
+            local progress = (fsrEndTime - now) / 5
+            progress = math.max(0, math.min(1, progress))
+            
+            spark:SetPoint("CENTER", self, "LEFT", offset + (progress * travelWidth), 0)
+            spark:SetVertexColor(1, 0, 0)
+        elseif waitingForFirstTick then
+            spark:Hide()
+        else
+            spark:Show()
+            if nextTickTime == 0 then nextTickTime = now + 2 end
+            while now >= nextTickTime do
+                nextTickTime = nextTickTime + 2
+            end
+            
+            local progress = 1 - ((nextTickTime - now) / 2)
+            progress = math.max(0, math.min(1, progress))
+            
+            spark:SetPoint("CENTER", self, "LEFT", offset + (progress * travelWidth), 0)
+            spark:SetVertexColor(1, 1, 1)
+        end
+    else
+        spark:Hide()
+    end
 end)
 
 local function UpdateFontSize(size)
@@ -83,8 +150,8 @@ end
 
 local function UpdateBarSize(w, h)
     bar:SetSize(w, h)
-	-- tweak width/height padding for the mana bar texture
     border:SetSize(w + 35, h + 8)
+    spark:SetHeight(h + 10)
 end
 
 bar:SetScript("OnDragStart", function(self)
@@ -107,12 +174,10 @@ bar:SetScript("OnDragStop", function(self)
     self:ClearAllPoints()
     self:SetPoint(VDManaBar.point, PlayerFrame, VDManaBar.relPoint, VDManaBar.x, VDManaBar.y)
     
-    -- sync ui inputs
     if VDManaBarXInput then VDManaBarXInput:SetText(tostring(math.floor(x))) end
     if VDManaBarYInput then VDManaBarYInput:SetText(tostring(math.floor(y))) end
 end)
 
--- wrapper for editboxes to reduce bloat
 local function CreateInput(name, parent, width, labelText, isNumeric, getFunc, setFunc)
     local box = CreateFrame("EditBox", name, parent, "InputBoxTemplate")
     box:SetSize(width, 20)
@@ -171,13 +236,13 @@ local function InitSettingsPanel()
     cbLock:SetChecked(VDManaBar.locked)
     cbLock:SetScript("OnClick", function(self)
         VDManaBar.locked = self:GetChecked()
+        UpdateDepth()
     end)
 
     local cbLockLabel = cbLock:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     cbLockLabel:SetPoint("LEFT", cbLock, "RIGHT", 5, 0)
     cbLockLabel:SetText("Lock position")
 
-    -- Red Box (X, Y)
     local xBox = CreateInput("VDManaBarXInput", panel, 40, "X", false,
         function() return VDManaBar.x end,
         function(val)
@@ -194,7 +259,6 @@ local function InitSettingsPanel()
         end)
     yBox:SetPoint("LEFT", xBox, "RIGHT", 40, 0)
 
-    -- Blue Box (Width, Height)
     local widthBox = CreateInput("VDManaBarWidthInput", panel, 40, "Width", true,
         function() return VDManaBar.width end,
         function(val)
@@ -215,7 +279,6 @@ local function InitSettingsPanel()
         end)
     heightBox:SetPoint("LEFT", widthBox, "RIGHT", 40, 0)
 
-    -- Checkboxes
     local cbPercent = CreateFrame("CheckButton", "VDManaBarPercentCheck", panel, "UICheckButtonTemplate")
     cbPercent:SetSize(25, 25)
     cbPercent:SetPoint("TOPLEFT", 10, -140)
@@ -242,7 +305,18 @@ local function InitSettingsPanel()
     cbValueLabel:SetPoint("LEFT", cbValue, "RIGHT", 5, 0)
     cbValueLabel:SetText("Show total mana")
 
-    -- Green Box (Font Size)
+    local cbTicks = CreateFrame("CheckButton", "VDManaBarTicksCheck", panel, "UICheckButtonTemplate")
+    cbTicks:SetSize(25, 25)
+    cbTicks:SetPoint("TOPLEFT", 10, -200)
+    cbTicks:SetChecked(VDManaBar.trackTicks)
+    cbTicks:SetScript("OnClick", function(self)
+        VDManaBar.trackTicks = self:GetChecked()
+    end)
+
+    local cbTicksLabel = cbTicks:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    cbTicksLabel:SetPoint("LEFT", cbTicks, "RIGHT", 5, 0)
+    cbTicksLabel:SetText("Track mana ticks")
+
     local fontBox = CreateInput("VDManaBarFontInput", panel, 40, "Font size", true,
         function() return VDManaBar.fontSize end,
         function(val)
@@ -271,7 +345,8 @@ f:SetScript("OnEvent", function(self, event, unit, powerToken)
             height = 14,
             fontSize = 12,
             showPercent = true,
-            showValue = true
+            showValue = true,
+            trackTicks = true
         }
         
         for k, v in pairs(defaults) do
@@ -284,6 +359,7 @@ f:SetScript("OnEvent", function(self, event, unit, powerToken)
         bar:SetPoint(VDManaBar.point, PlayerFrame, VDManaBar.relPoint, VDManaBar.x, VDManaBar.y)
         UpdateBarSize(VDManaBar.width, VDManaBar.height)
         UpdateFontSize(VDManaBar.fontSize)
+        UpdateDepth()
 
         InitSettingsPanel()
         UpdateVisibility()
@@ -293,8 +369,31 @@ f:SetScript("OnEvent", function(self, event, unit, powerToken)
             UpdateVisibility()
         end
 
+    elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+        if unit == "player" then
+            if UnitPower("player", 0) < previousMana then
+                fsrEndTime = GetTime() + 5
+                waitingForFirstTick = true
+            end
+        end
+
     elseif (event == "UNIT_POWER_UPDATE" or event == "UNIT_MAXPOWER") then
         if unit == "player" and powerToken == "MANA" then
+            local currMana = UnitPower("player", 0)
+            
+            if currMana > previousMana then
+                local gain = currMana - previousMana
+                local maxMana = UnitPowerMax("player", 0)
+                
+                if gain < (maxMana * 0.15) then
+                    nextTickTime = GetTime() + 2
+                    
+                    if GetTime() >= fsrEndTime then
+                        waitingForFirstTick = false
+                    end
+                end
+            end
+            
             UpdateMana()
         end
     end
